@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка - расчёт ММР</title>
+    <link rel="stylesheet" href="/static/styles/style.css">
+</head>
+<body>
+<header>
+    <div class="header-content">
+        <img src="/static/img/logo1.png" style="width: 100px; height: auto;">
+        <div class="site-title">
+            <h1>Моделирование малых модульных реакторов</h1>
+            <p>Удобный калькулятор ММР</p>
+        </div>
+    </div>
+</header>
+<div class="action-bar">
+    <a href="/" class="nav-item">
+        <button class="btn">Главная</button>
+    </a>
+</div>
+<main class="container">
+    <div class="request-detail">
+        <div class="request-detail__header-card">
+            <h1 class="request-detail__title">Заявка - расчёт ММР</h1>
+            <div class="system-load-detail__info">
+                <div class="request-detail__info-item"><strong>ID заявки:</strong> {{ .request_id }}</div>
+                <div class="request-detail__info-item"><strong>Моделей в заявке:</strong> {{ len .items }}</div>
+            </div>
+        </div>
+        <table class="request-table">
+            <thead>
+            <tr>
+                <th class="request-table__col-photo">Изображение</th>
+                <th>Модель</th>
+                <th>Мощность</th>
+                <th>Расход топлива</th>
+                <th>Количество</th>
+                <th>Энергия</th>
+                <th>Затраты</th>
+            </tr>
+            </thead>
+            <tbody>
+            {{ range .items }}
+            <tr>
+                <td class="request-table__col-photo">
+                    <img src="{{ .Model.PhotoURL }}" alt="{{ .Model.Title }}">
+                </td>
+                <td>{{ .Model.Title }}</td>
+                <td>{{ .Model.Power }}</td>
+                <td>{{ .Model.FuelUsage }}</td>
+                <td>{{ .Amount }}</td>
+                <td class="request-table__col-result">{{ .ResPower }} МВт</td>
+                <td class="request-table__col-result">{{ .ResFuel }} г</td>
+            </tr>
+            {{ end }}
+            </tbody>
+        </table>
+        <form method="POST" action="/requests/delete" style="margin-top: 24px;">
+            <input type="hidden" name="request_id" value="{{ .request_id }}">
+            <button type="submit" class="btn">Удалить заявку</button>
+        </form>
+    </div>
+</main>
+</body>
+</html>

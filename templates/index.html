@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моделирование малых модульных реакторов</title>
+    <link rel="stylesheet" href="/static/styles/style.css">
+</head>
+<body>
+<div class="app-container">
+    <header>
+        <div class="header-content">
+            <img src="/static/img/logo1.png" style="width: 100px; height: auto;">
+            <div class="site-title">
+                <h1>Моделирование малых модульных реакторов</h1>
+                <p>Удобный калькулятор ММР</p>
+            </div>
+        </div>
+    </header>
+    <div class="action-bar">
+        <form action="/" method="GET" class="search-box">
+            <input type="text" name="query" class="search-input" placeholder="Поиск моделей..." value="{{ .query }}">
+            <button type="submit" class="btn">Найти</button>
+        </form>
+        {{ if ne .request_count 0 }}
+        <a href="/requests/{{ .request_id }}" class="nav-item">
+            <span class="cart-btn">Корзина: {{.request_count}}</span>
+        </a>
+        {{ else }}
+        <a class="nav-item">
+            <span class="cart-btn-inactive">Корзина: 0</span>
+        </a>
+        {{ end }}
+    </div>
+    <main class="container">
+        <div class="products-grid">
+            {{range .models}}
+            <div class="product-card">
+                <a href="/model/{{.ModelID}}" class="nav-item">
+                    <div>
+                        <img src="{{.PhotoURL}}" alt="{{.Title}}" class="product-img">
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-title">{{.Title}}</div>
+                        <div class="product-specs">Мощность: {{.Power}} МВт</div>
+                    </div>
+                </a>
+                <form method="POST" action="/requests/add">
+                    <input type="hidden" name="model_id" value="{{ .ModelID }}">
+                    <button type="submit" class="btn">Добавить в заявку</button>
+                </form>
+            </div>
+            {{end}}
+        </div>
+    </main>
+</div>
+</body>
+</html>
