@@ -1,12 +1,216 @@
 package handler
 
 import (
+	"errors"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+
+	"rip_project/internal/app/repository"
+	"rip_project/internal/app/serializer"
 )
+
+func (h *Handler) GetCalcItems(ctx *gin.Context) {
+	creatorID := uint(h.Repository.GetCreatorID())
+	count := h.Repository.GetCalcModelCount(creatorID)
+	if count == 0 {
+		calc, err := h.Repository.CheckCurrentDraft(creatorID)
+		if err != nil {
+			ctx.JSON(http.StatusOK, gin.H{
+				"status":      "no_draft",
+				"model_count": 0,
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"id":          calc.CalcID,
+			"model_count": 0,
+		})
+		return
+	}
+	calcID := h.Repository.GetActiveCalcID(creatorID)
+	ctx.JSON(http.StatusOK, gin.H{
+		"id":          calcID,
+		"model_count": count,
+	})
+}
+
+func (h *Handler) GetAllCalcs(ctx *gin.Context) {
+	fromDate := ctx.Query("from-date")
+	var from, to time.Time
+	if fromDate != "" {
+		t, err := time.Parse("2006-01-02", fromDate)
+		if err != nil {
+			h.errorHandler(ctx, http.StatusBadRequest, err)
+			return
+		}
+		from = t
+	}
+	toDate := ctx.Query("to-date")
+	if toDate != "" {
+		t, err := time.Parse("2006-01-02", toDate)
+		if err != nil {
+			h.errorHandler(ctx, http.StatusBadRequest, err)
+			return
+		}
+		to = t
+	}
+	status := ctx.Query("status")
+	calcs, err := h.Repository.GetAllCalcs(from, to, status)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	resp := make([]serializer.CalcJSON, 0, len(calcs))
+	for _, calc := range calcs {
+		creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
+		completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
+		resp = append(resp, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (h *Handler) GetCalcAPI(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	calc, err := h.Repository.GetSingleCalc(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	items, err := h.Repository.GetCalcItems(id)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
+	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
+	itemsResp := make([]serializer.ModelCalcDetailJSON, 0, len(items))
+	for _, item := range items {
+		itemsResp = append(itemsResp, serializer.ModelCalcDetailToJSON(item))
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"calc":   serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount),
+		"models": itemsResp,
+	})
+}
+
+func (h *Handler) EditCalc(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	var j serializer.CalcJSON
+	if err := ctx.BindJSON(&j); err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	calc, err := h.Repository.EditCalc(id, j)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
+	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
+	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
+}
+
+func (h *Handler) FormCalc(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	calc, err := h.Repository.FormCalc(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
+	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
+	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
+}
+
+func (h *Handler) FinishCalc(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	var statusJSON serializer.StatusJSON
+	if err := ctx.BindJSON(&statusJSON); err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+	calc, err := h.Repository.FinishCalc(id, statusJSON.Status)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
+	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
+	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
+}
+
+func (h *Handler) DeleteCalcAPI(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	_, err = h.Repository.DeleteCalc(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"message": "Заявка удалена"})
+}
 
 func (h *Handler) GetCalc(ctx *gin.Context) {
 	idStr := ctx.Param("id")
@@ -42,6 +246,23 @@ func (h *Handler) GetCalc(ctx *gin.Context) {
 	})
 }
 
+func (h *Handler) DeleteCalc(ctx *gin.Context) {
+	calcIDStr := ctx.PostForm("calc_id")
+	calcID, err := strconv.Atoi(calcIDStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	_, err = h.Repository.DeleteCalc(calcID)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+
+	ctx.Redirect(http.StatusSeeOther, "/")
+}
+
 func (h *Handler) AddToCalc(ctx *gin.Context) {
 	modelIDStr := ctx.PostForm("model_id")
 	modelID, err := strconv.Atoi(modelIDStr)
@@ -59,21 +280,4 @@ func (h *Handler) AddToCalc(ctx *gin.Context) {
 	}
 
 	ctx.Redirect(http.StatusSeeOther, ctx.Request.Referer())
-}
-
-func (h *Handler) DeleteCalc(ctx *gin.Context) {
-	calcIDStr := ctx.PostForm("calc_id")
-	calcID, err := strconv.Atoi(calcIDStr)
-	if err != nil {
-		h.errorHandler(ctx, http.StatusBadRequest, err)
-		return
-	}
-
-	err = h.Repository.DeleteCalc(uint(calcID))
-	if err != nil {
-		h.errorHandler(ctx, http.StatusInternalServerError, err)
-		return
-	}
-
-	ctx.Redirect(http.StatusSeeOther, "/")
 }

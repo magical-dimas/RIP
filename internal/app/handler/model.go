@@ -1,13 +1,117 @@
 package handler
 
 import (
+	"errors"
+	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
-	"rip_project/internal/app/ds"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sirupsen/logrus"
+
+	"rip_project/internal/app/ds"
+	"rip_project/internal/app/repository"
+	"rip_project/internal/app/serializer"
 )
+
+func (h *Handler) GetModelsAPI(ctx *gin.Context) {
+	var models []ds.Model
+	var err error
+
+	searchQuery := ctx.Query("Title")
+	if searchQuery == "" {
+		models, err = h.Repository.GetModels()
+	} else {
+		models, err = h.Repository.GetModelsByTitle(searchQuery)
+	}
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	resp := make([]serializer.ModelJSON, 0, len(models))
+	for _, m := range models {
+		resp = append(resp, serializer.ModelToJSON(m))
+	}
+	ctx.JSON(http.StatusOK, resp)
+}
+
+func (h *Handler) GetModelAPI(ctx *gin.Context) {
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	model, err := h.Repository.GetModel(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	ctx.JSON(http.StatusOK, serializer.ModelToJSON(*model))
+}
+
+func (h *Handler) CreateModel(ctx *gin.Context) {
+	contentType := ctx.GetHeader("Content-Type")
+	var j serializer.ModelJSON
+	if strings.HasPrefix(contentType, "application/json") {
+		if err := ctx.BindJSON(&j); err != nil {
+			h.errorHandler(ctx, http.StatusBadRequest, err)
+			return
+		}
+	} else {
+		title := ctx.PostForm("title")
+		desc := ctx.PostForm("description")
+		if title == "" || desc == "" {
+			h.errorHandler(ctx, http.StatusBadRequest, fmt.Errorf("title and description are required"))
+			return
+		}
+		power := float64(55)
+		fuel_usage := float64(45)
+		if v := ctx.PostForm("power"); v != "" {
+			fmt.Sscanf(v, "%f", &power)
+		}
+		if v := ctx.PostForm("fuel_usage"); v != "" {
+			fmt.Sscanf(v, "%f", &fuel_usage)
+		}
+		j = serializer.ModelJSON{
+			Title:       title,
+			Description: desc,
+			Power:       power,
+			FuelUsage:   fuel_usage,
+		}
+	}
+
+	model, err := h.Repository.CreateModel(j)
+	if err != nil {
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
+		return
+	}
+	if imageFile, err := ctx.FormFile("image"); err == nil {
+		m, err := h.Repository.AddPhoto(ctx, int(model.ModelID), imageFile)
+		if err != nil {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+			return
+		}
+		model = *m
+	}
+	if videoFile, err := ctx.FormFile("video"); err == nil {
+		m, err := h.Repository.AddVideo(ctx, int(model.ModelID), videoFile)
+		if err != nil {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+			return
+		}
+		model = *m
+	}
+
+	ctx.Header("Location", fmt.Sprintf("/api/model/%d", model.ModelID))
+	ctx.JSON(http.StatusCreated, serializer.ModelToJSON(model))
+}
 
 func (h *Handler) GetModels(ctx *gin.Context) {
 	var models []ds.Model
