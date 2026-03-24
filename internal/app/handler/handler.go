@@ -23,9 +23,9 @@ func NewHandler(r *repository.Repository, cfg *config.Config) *Handler {
 func (h *Handler) RegisterHandler(router *gin.Engine) {
 	router.GET("/", h.GetModels)
 	router.GET("/model/:id", h.GetModel)
-	router.GET("/requests/:id", h.GetRequest)
-	router.POST("/requests/add", h.AddToRequest)
-	router.POST("/requests/delete", h.DeleteRequest)
+	router.GET("/nuclear_calculations/:id", h.GetCalc)
+	router.POST("/nuclear_calculations/add", h.AddToCalc)
+	router.POST("/nuclear_calculations/delete", h.DeleteCalc)
 }
 
 func (h *Handler) RegisterStatic(router *gin.Engine) {

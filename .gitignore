@@ -1,0 +1,68 @@
+# --- GoLand / JetBrains IDE ---
+# Папка настроек проекта (игнорируем пользовательские настройки)
+.idea/
+*.iml
+
+# Конкретные файлы внутри .idea, которые точно не нужны в репозитории
+# (если вы хотите делиться конфигурациями запуска, некоторые файлы можно оставить)
+.idea/workspace.xml
+.idea/tasks.xml
+.idea/dictionaries
+.idea/shelf
+.idea/misc.xml
+.idea/vcs.xml
+.idea/modules.xml
+.idea/go.mod.xml
+
+# --- Язык Go ---
+# Бинарные файлы (результат сборки)
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+*.app
+
+# Файлы покрытия тестов (coverage)
+coverage.out
+coverage.txt
+
+# Временные файлы профилирования
+*.prof
+*.pprof
+
+# Зависимости (если вы не используете vendor, иначе раскомментируйте)
+# vendor/
+
+# Кэш модулей (обычно находится в $GOPATH, но иногда попадает в проект)
+/pkg/
+
+# --- Операционные системы ---
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux/Unix
+*~
+.fuse_hidden*
+.Trash-*
+.nfs*
+
+# --- Общие ---
+# Лог-файлы
+*.log
+
+# Файлы окружения (секреты, токены)
+.env
+.env.local
+.env.*.local

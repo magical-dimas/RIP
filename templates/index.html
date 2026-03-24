@@ -22,13 +22,21 @@
             <input type="text" name="query" class="search-input" placeholder="Поиск моделей..." value="{{ .query }}">
             <button type="submit" class="btn">Найти</button>
         </form>
-        {{ if ne .request_count 0 }}
-        <a href="/requests/{{ .request_id }}" class="nav-item">
-            <span class="cart-btn">Корзина: {{.request_count}}</span>
+        {{ if ne .calc_count 0 }}
+        <a href="/nuclear_calculations/{{ .calc_id }}" class="cart-btn" title="Текущая заявка">
+            <span style="font-size: 30px;">&#x2622;</span>
+<!--            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"-->
+<!--                 fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">-->
+<!--                <circle cx="9" cy="20" r="1.5"/>-->
+<!--                <circle cx="17" cy="20" r="1.5"/>-->
+<!--                <path d="M3 4h2l2.4 10.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.6L21 8H6"/>-->
+<!--            </svg>-->
+            <span class="request-icon__badge">{{ .calc_count }}</span>
         </a>
         {{ else }}
-        <a class="nav-item">
-            <span class="cart-btn-inactive">Корзина: 0</span>
+        <a class="cart-btn-inactive" title="Заявки нет">
+            <span style="font-size: 30px;">&#x2622;</span>
+            <span class="request-icon__badge request-icon__badge--empty">0</span>
         </a>
         {{ end }}
     </div>
@@ -46,7 +54,7 @@
                         <div class="product-specs">Мощность: {{.Power}} МВт</div>
                     </div>
                 </a>
-                <form method="POST" action="/requests/add">
+                <form method="POST" action="/nuclear_calculations/add">
                     <input type="hidden" name="model_id" value="{{ .ModelID }}">
                     <button type="submit" class="btn">Добавить в заявку</button>
                 </form>

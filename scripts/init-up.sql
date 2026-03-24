@@ -16,8 +16,8 @@ CREATE TABLE IF NOT EXISTS models (
     fuel_usage FLOAT NOT NULL
     );
 
-CREATE TABLE IF NOT EXISTS requests (
-    request_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS nuclear_calculations (
+    calc_id SERIAL PRIMARY KEY,
     status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     creator_id INTEGER NOT NULL REFERENCES users(user_id),
@@ -27,13 +27,13 @@ CREATE TABLE IF NOT EXISTS requests (
     description VARCHAR(2000)
     );
 
-CREATE TABLE IF NOT EXISTS modelrequests (
-    request_id INTEGER NOT NULL REFERENCES requests(request_id),
+CREATE TABLE IF NOT EXISTS modelcalcs (
+    calc_id INTEGER NOT NULL REFERENCES nuclear_calculations(calc_id),
     model_id INTEGER NOT NULL REFERENCES models(model_id),
     amount INTEGER NOT NULL DEFAULT 1,
     res_power FLOAT,
     res_fuel FLOAT,
-    PRIMARY KEY (request_id, model_id)
+    PRIMARY KEY (calc_id, model_id)
     );
 
 INSERT INTO users (login, password, is_moderator) VALUES

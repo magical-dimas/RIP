@@ -42,7 +42,7 @@
                     <span>Расход топлива: {{ .model.FuelUsage }}</span>
                 </div>
                 <p class="detail-card__description">{{ .model.Description }}</p>
-                <form method="POST" action="/requests/add" style="margin-top: 24px;">
+                <form method="POST" action="/nuclear_calculations/add" style="margin-top: 24px;">
                     <input type="hidden" name="model_id" value="{{ .model.ModelID }}">
                     <button type="submit" class="btn">Добавить в заявку</button>
                 </form>

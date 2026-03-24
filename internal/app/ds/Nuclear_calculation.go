@@ -5,8 +5,8 @@ import (
 	"time"
 )
 
-type Request struct {
-	RequestID   uint         `gorm:"primaryKey;column:request_id"`
+type Nuclear_calculation struct {
+	CalcID      uint         `gorm:"primaryKey;column:calc_id"`
 	Status      string       `gorm:"type:varchar(20);not null"`
 	CreatedAt   time.Time    `gorm:"not null"`
 	CreatorID   uint         `gorm:"not null"`
@@ -19,6 +19,6 @@ type Request struct {
 	Moderator *Users `gorm:"foreignKey:ModeratorID"`
 }
 
-func (Request) TableName() string {
-	return "requests"
+func (Nuclear_calculation) TableName() string {
+	return "nuclear_calculations"
 }

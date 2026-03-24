@@ -8,7 +8,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (h *Handler) GetRequest(ctx *gin.Context) {
+func (h *Handler) GetCalc(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -17,7 +17,7 @@ func (h *Handler) GetRequest(ctx *gin.Context) {
 	}
 
 	creatorID := uint(1)
-	isDraft, err := h.Repository.IsDraftRequest(id, creatorID)
+	isDraft, err := h.Repository.IsDraftCalc(id, creatorID)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
@@ -27,7 +27,7 @@ func (h *Handler) GetRequest(ctx *gin.Context) {
 		return
 	}
 
-	items, req, err := h.Repository.GetRequest(id, creatorID)
+	items, calc, err := h.Repository.GetCalc(id, creatorID)
 	if err != nil {
 		logrus.Error(err)
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
@@ -35,14 +35,14 @@ func (h *Handler) GetRequest(ctx *gin.Context) {
 	}
 
 	ctx.HTML(http.StatusOK, "cart.html", gin.H{
-		"items":      items,
-		"request":    req,
-		"request_id": id,
-		"minioUrl":   h.Config.MinioURL,
+		"items":               items,
+		"nuclear_calculation": calc,
+		"calc_id":             id,
+		"minioUrl":            h.Config.MinioURL,
 	})
 }
 
-func (h *Handler) AddToRequest(ctx *gin.Context) {
+func (h *Handler) AddToCalc(ctx *gin.Context) {
 	modelIDStr := ctx.PostForm("model_id")
 	modelID, err := strconv.Atoi(modelIDStr)
 	if err != nil {
@@ -61,15 +61,15 @@ func (h *Handler) AddToRequest(ctx *gin.Context) {
 	ctx.Redirect(http.StatusSeeOther, ctx.Request.Referer())
 }
 
-func (h *Handler) DeleteRequest(ctx *gin.Context) {
-	reqIDStr := ctx.PostForm("request_id")
-	reqID, err := strconv.Atoi(reqIDStr)
+func (h *Handler) DeleteCalc(ctx *gin.Context) {
+	calcIDStr := ctx.PostForm("calc_id")
+	calcID, err := strconv.Atoi(calcIDStr)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	err = h.Repository.DeleteRequest(uint(reqID))
+	err = h.Repository.DeleteCalc(uint(calcID))
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return

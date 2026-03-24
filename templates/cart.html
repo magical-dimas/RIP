@@ -26,7 +26,7 @@
         <div class="request-detail__header-card">
             <h1 class="request-detail__title">Заявка - расчёт ММР</h1>
             <div class="system-load-detail__info">
-                <div class="request-detail__info-item"><strong>ID заявки:</strong> {{ .request_id }}</div>
+                <div class="request-detail__info-item"><strong>ID заявки:</strong> {{ .calc_id }}</div>
                 <div class="request-detail__info-item"><strong>Моделей в заявке:</strong> {{ len .items }}</div>
             </div>
         </div>
@@ -58,8 +58,8 @@
             {{ end }}
             </tbody>
         </table>
-        <form method="POST" action="/requests/delete" style="margin-top: 24px;">
-            <input type="hidden" name="request_id" value="{{ .request_id }}">
+        <form method="POST" action="/nuclear_calculations/delete" style="margin-top: 24px;">
+            <input type="hidden" name="calc_id" value="{{ .calc_id }}">
             <button type="submit" class="btn">Удалить заявку</button>
         </form>
     </div>

@@ -24,15 +24,15 @@ func (h *Handler) GetModels(ctx *gin.Context) {
 	}
 
 	creatorID := uint(1)
-	reqCount := h.Repository.GetRequestModelCount(creatorID)
-	activeReqID := h.Repository.GetActiveRequestID(creatorID)
+	calcCount := h.Repository.GetCalcModelCount(creatorID)
+	activeCalcID := h.Repository.GetActiveCalcID(creatorID)
 
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
-		"models":        models,
-		"query":         searchQuery,
-		"request_count": reqCount,
-		"request_id":    activeReqID,
-		"minioUrl":      h.Config.MinioURL,
+		"models":     models,
+		"query":      searchQuery,
+		"calc_count": calcCount,
+		"calc_id":    activeCalcID,
+		"minioUrl":   h.Config.MinioURL,
 	})
 }
 
