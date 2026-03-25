@@ -64,6 +64,7 @@ func (r *Repository) AddPhoto(ctx *gin.Context, modelID int, file *multipart.Fil
 	if err != nil {
 		return nil, err
 	}
+	fileName = "http://localhost:9000/reactorservice/" + fileName
 	if err := r.db.Model(&ds.Model{}).Where("model_id = ?", modelID).Update("photo_url", fileName).Error; err != nil {
 		return nil, err
 	}

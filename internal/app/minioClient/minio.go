@@ -108,5 +108,5 @@ func InitMinio() (*minio.Client, error) {
 }
 
 func GetImgBucket() string {
-	return "test"
+	return "reactorservice"
 }

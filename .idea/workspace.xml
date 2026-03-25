@@ -5,27 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="02d1bd40-d713-47cf-8615-a59f41750948" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/internal/app/handler/autn_mw.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/role/role.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmd/app/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/app/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/ds/Nuclear_calculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/ds/Nuclear_calculation.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/ds/Users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/ds/Engineers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/docs.go" beforeDir="false" afterPath="$PROJECT_DIR$/docs/docs.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.json" beforeDir="false" afterPath="$PROJECT_DIR$/docs/swagger.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docs/swagger.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/docs/swagger.yaml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/handler/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/model.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/handler/model_calc.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/model_calc.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/handler/nuclear_claculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/nuclear_calculation.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/handler/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/engineers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/handler/nuclear_calculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/nuclear_calculation.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/minioClient/minio.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/minioClient/minio.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/repository/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/model.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/repository/nuclear_calculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/nuclear_calculation.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/repository/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/repository/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/engineers.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/serializer/nuclear_calculation_json.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/serializer/nuclear_calculation_json.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/serializer/users_json.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/serializer/engineers_json.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/init-down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/init-down.sql" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/init-up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/init-up.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,28 +49,28 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultGoTemplateProperty": "Go File",
-    "Go Build.go build lab1.executor": "Run",
-    "Go Build.go build rip_project/cmd/app.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.GoLinterPluginOnboardingV2": "true",
-    "RunOnceActivity.GoLinterPluginStorageMigration": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.go.analysis.ui.options.defaults": "true",
-    "RunOnceActivity.go.formatter.settings.were.checked": "true",
-    "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
-    "RunOnceActivity.typescript.service.memoryLimit.init": "true",
-    "SHELLCHECK.PATH": "I do mind",
-    "git-widget-placeholder": "spa",
-    "go.sdk.automatically.set": "true",
-    "last_opened_file_path": "/Users/hunter/Documents/rip_project/scripts",
-    "nodejs_package_manager_path": "npm"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultGoTemplateProperty&quot;: &quot;Go File&quot;,
+    &quot;Go Build.go build lab1.executor&quot;: &quot;Run&quot;,
+    &quot;Go Build.go build rip_project/cmd/app.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginOnboardingV2&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.GoLinterPluginStorageMigration&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.analysis.ui.options.defaults&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.formatter.settings.were.checked&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.go.modules.go.list.on.any.changes.was.set&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.typescript.service.memoryLimit.init&quot;: &quot;true&quot;,
+    &quot;SHELLCHECK.PATH&quot;: &quot;I do mind&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;spa&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/hunter/Documents/rip_project/scripts&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/scripts" />

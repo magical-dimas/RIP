@@ -165,14 +165,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "ID расчёта",
-                        "name": "calc_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
                         "description": "Новые параметры",
                         "name": "input",
                         "in": "body",
@@ -207,14 +199,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "ID модели",
                         "name": "model_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "minimum": 1,
-                        "type": "integer",
-                        "description": "ID расчёта",
-                        "name": "calc_id",
                         "in": "path",
                         "required": true
                     }

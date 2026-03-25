@@ -27,7 +27,7 @@ func (h *Handler) AddToCalcAPI(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	creatorID := uint(h.Repository.GetCreatorID())
+	creatorID := uint(h.getEngineerID(ctx))
 	calc, created, err := h.Repository.GetCalcDraft(creatorID)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
@@ -59,7 +59,6 @@ func (h *Handler) AddToCalcAPI(ctx *gin.Context) {
 // @Security BearerAuth
 // @Produce json
 // @Param model_id path integer true "ID модели" minimum(1)
-// @Param calc_id path integer true "ID расчёта" minimum(1)
 // @Success 200 "Успешно удалено"
 // @Router /api/model_calculation/{model_id}/{calc_id} [delete]
 func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
@@ -68,12 +67,13 @@ func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calcID, err := strconv.Atoi(ctx.Param("calc_id"))
+	creatorID := uint(h.getEngineerID(ctx))
+	calc, _, err := h.Repository.GetCalcDraft(creatorID)
 	if err != nil {
-		h.errorHandler(ctx, http.StatusBadRequest, err)
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
-	calc, err := h.Repository.DeleteModelFromCalc(calcID, modelID)
+	calc, err = h.Repository.DeleteModelFromCalc(int(calc.CalcID), modelID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)
@@ -95,7 +95,6 @@ func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param model_id path integer true "ID модели" minimum(1)
-// @Param calc_id path integer true "ID расчёта" minimum(1)
 // @Param input body serializer.ModelCalcJSON true "Новые параметры"
 // @Success 200 "Успешно"
 // @Router /api/model_calculation/{model_id}/{calc_id} [put]
@@ -105,9 +104,10 @@ func (h *Handler) EditInCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calcID, err := strconv.Atoi(ctx.Param("calc_id"))
+	creatorID := uint(h.getEngineerID(ctx))
+	calc, _, err := h.Repository.GetCalcDraft(creatorID)
 	if err != nil {
-		h.errorHandler(ctx, http.StatusBadRequest, err)
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
 	var j serializer.ModelCalcJSON
@@ -115,7 +115,7 @@ func (h *Handler) EditInCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	item, err := h.Repository.EditModelInCalc(calcID, modelID, j)
+	item, err := h.Repository.EditModelInCalc(int(calc.CalcID), modelID, j)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)

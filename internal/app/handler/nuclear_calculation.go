@@ -182,7 +182,21 @@ func (h *Handler) FormCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calc, err := h.Repository.FormCalc(id)
+	calc, err := h.Repository.GetSingleCalc(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	if calc.CreatorID != h.getEngineerID(ctx) {
+		h.errorHandler(ctx, http.StatusForbidden, repository.ErrNotAllowed)
+	}
+	calc, err = h.Repository.FormCalc(id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)
@@ -250,6 +264,20 @@ func (h *Handler) DeleteCalcAPI(ctx *gin.Context) {
 		return
 	}
 
+	calc, err := h.Repository.GetSingleCalc(id)
+	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			h.errorHandler(ctx, http.StatusNotFound, err)
+		} else if errors.Is(err, repository.ErrNotAllowed) {
+			h.errorHandler(ctx, http.StatusForbidden, err)
+		} else {
+			h.errorHandler(ctx, http.StatusInternalServerError, err)
+		}
+		return
+	}
+	if calc.CreatorID != h.getEngineerID(ctx) {
+		h.errorHandler(ctx, http.StatusForbidden, repository.ErrNotAllowed)
+	}
 	_, err = h.Repository.DeleteCalc(id)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {

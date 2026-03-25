@@ -55,8 +55,8 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 		authGroup.POST("/engineers/logout", h.SignOut)
 
 		authGroup.POST("/model_calculation/add/:model_id", h.AddToCalcAPI)
-		authGroup.PUT("/model_calculation/:model_id/:calc_id", h.EditInCalc)
-		authGroup.DELETE("/model_calculation/:model_id/:calc_id", h.DeleteFromCalc)
+		authGroup.PUT("/model_calculation/:model_id", h.EditInCalc)
+		authGroup.DELETE("/model_calculation/:model_id", h.DeleteFromCalc)
 
 		authGroup.GET("/nuclear_calculations/items", h.GetCalcItems)
 		authGroup.GET("/nuclear_calculations", h.GetAllCalcs)

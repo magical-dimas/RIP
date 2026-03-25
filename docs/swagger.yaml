@@ -172,12 +172,6 @@ paths:
         name: model_id
         required: true
         type: integer
-      - description: ID расчёта
-        in: path
-        minimum: 1
-        name: calc_id
-        required: true
-        type: integer
       produces:
       - application/json
       responses:
@@ -196,12 +190,6 @@ paths:
         in: path
         minimum: 1
         name: model_id
-        required: true
-        type: integer
-      - description: ID расчёта
-        in: path
-        minimum: 1
-        name: calc_id
         required: true
         type: integer
       - description: Новые параметры

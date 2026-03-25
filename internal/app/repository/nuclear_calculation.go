@@ -313,9 +313,6 @@ func (r *Repository) FormCalc(id int) (ds.Nuclear_calculation, error) {
 	if calc.Status != "draft" {
 		return ds.Nuclear_calculation{}, fmt.Errorf("%w: только черновик можно сформировать", ErrNotAllowed)
 	}
-	if calc.CreatorID != uint(r.GetCreatorID()) {
-		return ds.Nuclear_calculation{}, fmt.Errorf("%w: вы не создатель этой заявки", ErrNotAllowed)
-	}
 
 	items, err := r.GetCalcItems(int(calc.CalcID))
 	if err != nil {
@@ -399,9 +396,6 @@ func (r *Repository) DeleteCalc(calcID int) (ds.Nuclear_calculation, error) {
 	}
 	if calc.Status != "draft" {
 		return ds.Nuclear_calculation{}, fmt.Errorf("%w: удалить можно только черновик", ErrNotAllowed)
-	}
-	if calc.CreatorID != uint(r.GetCreatorID()) {
-		return ds.Nuclear_calculation{}, fmt.Errorf("%w: вы не создатель этой заявки", ErrNotAllowed)
 	}
 	formingDate := time.Now()
 	err = r.db.Model(&calc).Updates(map[string]interface{}{

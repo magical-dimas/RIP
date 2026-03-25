@@ -117,7 +117,7 @@ func (h *Handler) CreateModel(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
-	if imageFile, err := ctx.FormFile("image"); err == nil {
+	if imageFile, err := ctx.FormFile("photo"); err == nil {
 		m, err := h.Repository.AddPhoto(ctx, int(model.ModelID), imageFile)
 		if err != nil {
 			h.errorHandler(ctx, http.StatusInternalServerError, err)

@@ -55,11 +55,3 @@ func New(dsn string) (*Repository, error) {
 func (r *Repository) GetRedis() *redis.Client {
 	return r.redis
 }
-
-func (r *Repository) GetCreatorID() int {
-	return 1
-}
-
-func (r *Repository) GetUserID() int {
-	return r.userID
-}
