@@ -363,7 +363,7 @@ func (r *Repository) FinishCalc(id int, status string) (ds.Nuclear_calculation, 
 	if status != "completed" && status != "rejected" {
 		return ds.Nuclear_calculation{}, errors.New("неверный статус: допустимы completed или rejected")
 	}
-	user, err := r.GetUserByID(r.GetUserID())
+	user, err := r.GetUserByID(2)
 	if err != nil {
 		return ds.Nuclear_calculation{}, err
 	}

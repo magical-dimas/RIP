@@ -61,6 +61,7 @@ func (r *Repository) AddPhoto(ctx *gin.Context, modelID int, file *multipart.Fil
 		_ = minioClient.DeleteObject(ctx, r.mc, minioClient.GetImgBucket(), model.PhotoURL)
 	}
 	fileName, err := minioClient.UploadImage(ctx, r.mc, minioClient.GetImgBucket(), file, model.ModelID)
+	fileName = "http://localhost:9000/reactorservice/" + fileName
 	if err != nil {
 		return nil, err
 	}

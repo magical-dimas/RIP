@@ -52,12 +52,13 @@ func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calcID, err := strconv.Atoi(ctx.Param("calc_id"))
+	creatorID := uint(h.Repository.GetCreatorID())
+	calc, _, err := h.Repository.GetCalcDraft(creatorID)
 	if err != nil {
-		h.errorHandler(ctx, http.StatusBadRequest, err)
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
-	calc, err := h.Repository.DeleteModelFromCalc(calcID, modelID)
+	calc, err = h.Repository.DeleteModelFromCalc(int(calc.CalcID), modelID)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)
@@ -79,9 +80,10 @@ func (h *Handler) EditInCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calcID, err := strconv.Atoi(ctx.Param("calc_id"))
+	creatorID := uint(h.Repository.GetCreatorID())
+	calc, _, err := h.Repository.GetCalcDraft(creatorID)
 	if err != nil {
-		h.errorHandler(ctx, http.StatusBadRequest, err)
+		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return
 	}
 	var j serializer.ModelCalcJSON
@@ -89,7 +91,7 @@ func (h *Handler) EditInCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	item, err := h.Repository.EditModelInCalc(calcID, modelID, j)
+	item, err := h.Repository.EditModelInCalc(int(calc.CalcID), modelID, j)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)

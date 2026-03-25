@@ -46,8 +46,8 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 	mc := api.Group("/model_calculation")
 	{
 		mc.POST("/add/:model_id", h.AddToCalcAPI)
-		mc.DELETE("/:model_id/:calc_id", h.DeleteFromCalc)
-		mc.PUT("/:model_id/:calc_id", h.EditInCalc)
+		mc.DELETE("/:model_id", h.DeleteFromCalc)
+		mc.PUT("/:model_id", h.EditInCalc)
 	}
 
 	users := api.Group("/users")
