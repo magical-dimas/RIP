@@ -1,0 +1,491 @@
+basePath: /
+definitions:
+  ds.Engineers:
+    properties:
+      engineerID:
+        type: integer
+      isTechnician:
+        type: boolean
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  ds.Model:
+    properties:
+      description:
+        type: string
+      fuelUsage:
+        type: number
+      isDeleted:
+        type: boolean
+      modelID:
+        type: integer
+      photoURL:
+        type: string
+      power:
+        type: number
+      title:
+        type: string
+      video:
+        type: string
+    type: object
+  ds.Nuclear_calculation:
+    properties:
+      calcID:
+        type: integer
+      createdAt:
+        type: string
+      creator:
+        $ref: '#/definitions/ds.Engineers'
+      creatorID:
+        type: integer
+      description:
+        type: string
+      finishDate:
+        type: string
+      formingDate:
+        type: string
+      moderator:
+        $ref: '#/definitions/ds.Engineers'
+      moderatorID:
+        type: integer
+      status:
+        type: string
+    type: object
+  serializer.CalcJSON:
+    properties:
+      calc_id:
+        type: integer
+      completed_item_count:
+        type: integer
+      created_at:
+        type: string
+      creator_login:
+        type: string
+      description:
+        type: string
+      finish_date:
+        type: string
+      forming_date:
+        type: string
+      moderator_login:
+        type: string
+      status:
+        type: string
+    type: object
+  serializer.EngineerJSON:
+    properties:
+      id:
+        type: integer
+      is_technician:
+        type: boolean
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  serializer.ModelCalcJSON:
+    properties:
+      amount:
+        type: integer
+      calc_id:
+        type: integer
+      model_id:
+        type: integer
+      res_fuel:
+        type: number
+      res_power:
+        type: number
+    type: object
+  serializer.StatusJSON:
+    properties:
+      status:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API сервера для расчета ядерных реакторов
+  title: RIP Project Nuclear Calc API
+  version: "1.0"
+paths:
+  /api/engineers/login:
+    post:
+      consumes:
+      - application/json
+      description: Выдает JWT токен в случае успешной авторизации
+      parameters:
+      - description: Данные для входа
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/serializer.EngineerJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Авторизация (Login)
+      tags:
+      - Пользователи
+  /api/engineers/logout:
+    post:
+      description: Помещает переданный JWT в Blacklist Redis'а
+      responses: {}
+      security:
+      - BearerAuth: []
+      summary: Выход (Logout)
+      tags:
+      - Пользователи
+  /api/engineers/register:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Данные регистрации
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/serializer.EngineerJSON'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/ds.Engineers'
+      summary: Регистрация пользователя
+      tags:
+      - Пользователи
+  /api/model_calculation/{model_id}/{calc_id}:
+    delete:
+      parameters:
+      - description: ID модели
+        in: path
+        minimum: 1
+        name: model_id
+        required: true
+        type: integer
+      - description: ID расчёта
+        in: path
+        minimum: 1
+        name: calc_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно удалено
+      security:
+      - BearerAuth: []
+      summary: Удаление элемента из корзины
+      tags:
+      - Корзина
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID модели
+        in: path
+        minimum: 1
+        name: model_id
+        required: true
+        type: integer
+      - description: ID расчёта
+        in: path
+        minimum: 1
+        name: calc_id
+        required: true
+        type: integer
+      - description: Новые параметры
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/serializer.ModelCalcJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно
+      security:
+      - BearerAuth: []
+      summary: Обновление элемента в корзине
+      tags:
+      - Корзина
+  /api/model_calculation/add/{model_id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID модели
+        in: path
+        minimum: 1
+        name: model_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Добавление модели в корзину (черновик)
+      tags:
+      - Корзина
+  /api/models:
+    get:
+      description: Возвращает список всех моделей реакторов из каталога
+      parameters:
+      - description: Поиск по названию
+        in: query
+        name: search
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ds.Model'
+            type: array
+      summary: Получение всех услуг
+      tags:
+      - Услуги
+    post:
+      consumes:
+      - multipart/form-data
+      description: Доступно только Технику
+      parameters:
+      - description: Название
+        in: formData
+        name: name
+        required: true
+        type: string
+      - description: Описание
+        in: formData
+        name: description
+        required: true
+        type: string
+      - description: Мощность
+        in: formData
+        name: power
+        type: number
+      - description: Расход Топлива
+        in: formData
+        name: fuel_usage
+        type: number
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/ds.Model'
+      security:
+      - BearerAuth: []
+      summary: Добавление новой услуги
+      tags:
+      - Услуги
+  /api/models/{id}:
+    get:
+      parameters:
+      - description: ID Модели
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.Model'
+      summary: Получение услуги по ID
+      tags:
+      - Услуги
+  /api/nuclear_calculations:
+    get:
+      parameters:
+      - description: Фильтр по статусу
+        enum:
+        - draft
+        - pending
+        - approved
+        - rejected
+        in: query
+        name: status
+        type: string
+      - description: 'Дата от (формат: YYYY-MM-DD)'
+        example: '"2024-01-01"'
+        format: date
+        in: query
+        name: from-date
+        type: string
+      - description: 'Дата до (формат: YYYY-MM-DD)'
+        example: '"2024-12-31"'
+        format: date
+        in: query
+        name: to-date
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список расчётов
+          schema:
+            items:
+              additionalProperties: true
+              type: object
+            type: array
+      security:
+      - BearerAuth: []
+      summary: Список всех сформированных заявок (с фильтрами)
+      tags:
+      - Заявки
+  /api/nuclear_calculations/{id}:
+    delete:
+      parameters:
+      - description: ID Заявки
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: Успешно
+      security:
+      - BearerAuth: []
+      summary: Логическое удаление заявки
+      tags:
+      - Заявки
+    get:
+      parameters:
+      - description: ID Заявки
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/ds.Nuclear_calculation'
+      security:
+      - BearerAuth: []
+      summary: Получение заявки по ID
+      tags:
+      - Заявки
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID заявки
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: Обновляемые поля заявки
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/serializer.CalcJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Успешно
+      security:
+      - BearerAuth: []
+      summary: Изменение заявки
+      tags:
+      - Заявки
+  /api/nuclear_calculations/{id}/finish:
+    put:
+      consumes:
+      - application/json
+      description: Доступно только Технику
+      parameters:
+      - description: ID заявки
+        in: path
+        minimum: 1
+        name: id
+        required: true
+        type: integer
+      - description: 'Действие: завершить или отклонить'
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/serializer.StatusJSON'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Завершение или отклонение заявки
+      tags:
+      - Заявки
+  /api/nuclear_calculations/{id}/form:
+    put:
+      description: Переводит заявку из draft в сформирован
+      parameters:
+      - description: ID Заявки
+        in: path
+        name: id
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Сформировать заявку (запуск расчетов)
+      tags:
+      - Заявки
+  /api/nuclear_calculations/items:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Получение иконки корзины (сводка черновика)
+      tags:
+      - Заявки
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

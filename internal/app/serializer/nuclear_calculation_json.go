@@ -24,8 +24,8 @@ func CalcToJSON(calc ds.Nuclear_calculation, creatorLogin, moderatorLogin string
 		mLogin = &moderatorLogin
 	}
 	var finishDate *time.Time
-	if calc.FinishDate.Valid {
-		finishDate = &calc.FinishDate.Time
+	if calc.FinishDate != nil {
+		finishDate = calc.FinishDate
 	}
 	return CalcJSON{
 		CalcID:             calc.CalcID,

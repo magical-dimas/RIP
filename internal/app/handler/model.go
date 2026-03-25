@@ -15,6 +15,13 @@ import (
 	"rip_project/internal/app/serializer"
 )
 
+// @Summary Получение всех услуг
+// @Description Возвращает список всех моделей реакторов из каталога
+// @Tags Услуги
+// @Produce json
+// @Param search query string false "Поиск по названию"
+// @Success 200 {array} ds.Model
+// @Router /api/models [get]
 func (h *Handler) GetModelsAPI(ctx *gin.Context) {
 	var models []ds.Model
 	var err error
@@ -36,6 +43,12 @@ func (h *Handler) GetModelsAPI(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// @Summary Получение услуги по ID
+// @Tags Услуги
+// @Produce json
+// @Param id path int true "ID Модели"
+// @Success 200 {object} ds.Model
+// @Router /api/models/{id} [get]
 func (h *Handler) GetModelAPI(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -56,6 +69,18 @@ func (h *Handler) GetModelAPI(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, serializer.ModelToJSON(*model))
 }
 
+// @Summary Добавление новой услуги
+// @Description Доступно только Технику
+// @Tags Услуги
+// @Security BearerAuth
+// @Accept multipart/form-data
+// @Produce json
+// @Param name formData string true "Название"
+// @Param description formData string true "Описание"
+// @Param power formData number false "Мощность"
+// @Param fuel_usage formData number false "Расход Топлива"
+// @Success 201 {object} ds.Model
+// @Router /api/models [post]
 func (h *Handler) CreateModel(ctx *gin.Context) {
 	contentType := ctx.GetHeader("Content-Type")
 	var j serializer.ModelJSON

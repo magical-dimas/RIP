@@ -12,6 +12,14 @@ import (
 	"rip_project/internal/app/serializer"
 )
 
+// @Summary Добавление модели в корзину (черновик)
+// @Tags Корзина
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param model_id path integer true "ID модели" minimum(1)
+// @Success 201 {object} map[string]string
+// @Router /api/model_calculation/add/{model_id} [post]
 func (h *Handler) AddToCalcAPI(ctx *gin.Context) {
 	modelIDStr := ctx.Param("model_id")
 	modelID, err := strconv.Atoi(modelIDStr)
@@ -46,6 +54,14 @@ func (h *Handler) AddToCalcAPI(ctx *gin.Context) {
 	ctx.JSON(status, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
 }
 
+// @Summary Удаление элемента из корзины
+// @Tags Корзина
+// @Security BearerAuth
+// @Produce json
+// @Param model_id path integer true "ID модели" minimum(1)
+// @Param calc_id path integer true "ID расчёта" minimum(1)
+// @Success 200 "Успешно удалено"
+// @Router /api/model_calculation/{model_id}/{calc_id} [delete]
 func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
 	modelID, err := strconv.Atoi(ctx.Param("model_id"))
 	if err != nil {
@@ -73,6 +89,16 @@ func (h *Handler) DeleteFromCalc(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
 }
 
+// @Summary Обновление элемента в корзине
+// @Tags Корзина
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param model_id path integer true "ID модели" minimum(1)
+// @Param calc_id path integer true "ID расчёта" minimum(1)
+// @Param input body serializer.ModelCalcJSON true "Новые параметры"
+// @Success 200 "Успешно"
+// @Router /api/model_calculation/{model_id}/{calc_id} [put]
 func (h *Handler) EditInCalc(ctx *gin.Context) {
 	modelID, err := strconv.Atoi(ctx.Param("model_id"))
 	if err != nil {

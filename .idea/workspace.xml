@@ -5,25 +5,27 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="02d1bd40-d713-47cf-8615-a59f41750948" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/internal/app/handler/model_calc.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/handler/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/minioClient/minio.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/repository/users.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/serializer/model_calc_json.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/serializer/model_json.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/serializer/nuclear_calculation_json.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/internal/app/serializer/users_json.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/app/handler/autn_mw.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/internal/app/role/role.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmd/app/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/cmd/app/main.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/ds/Nuclear_calculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/ds/Nuclear_calculation.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/ds/Users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/ds/Engineers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/handler/handler.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/handler.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/handler/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/model.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/handler/nuclear_claculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/nuclear_claculation.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/app/repository/model.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/model.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/handler/model_calc.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/model_calc.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/handler/nuclear_claculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/nuclear_calculation.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/handler/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/handler/engineers.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/repository/nuclear_calculation.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/nuclear_calculation.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/internal/app/repository/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/repository.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/repository/users.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/repository/engineers.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/serializer/nuclear_calculation_json.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/serializer/nuclear_calculation_json.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/internal/app/serializer/users_json.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/app/serializer/engineers_json.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/init-down.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/init-down.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/init-up.sql" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/init-up.sql" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -72,7 +74,7 @@
     "RunOnceActivity.go.modules.go.list.on.any.changes.was.set": "true",
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "SHELLCHECK.PATH": "I do mind",
-    "git-widget-placeholder": "apis",
+    "git-widget-placeholder": "spa",
     "go.sdk.automatically.set": "true",
     "last_opened_file_path": "/Users/hunter/Documents/rip_project/scripts",
     "nodejs_package_manager_path": "npm"

@@ -1,0 +1,765 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API сервера для расчета ядерных реакторов",
+        "title": "RIP Project Nuclear Calc API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {
+        "/api/engineers/login": {
+            "post": {
+                "description": "Выдает JWT токен в случае успешной авторизации",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Авторизация (Login)",
+                "parameters": [
+                    {
+                        "description": "Данные для входа",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serializer.EngineerJSON"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/engineers/logout": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Помещает переданный JWT в Blacklist Redis'а",
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Выход (Logout)",
+                "responses": {}
+            }
+        },
+        "/api/engineers/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Пользователи"
+                ],
+                "summary": "Регистрация пользователя",
+                "parameters": [
+                    {
+                        "description": "Данные регистрации",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serializer.EngineerJSON"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Engineers"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/model_calculation/add/{model_id}": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Корзина"
+                ],
+                "summary": "Добавление модели в корзину (черновик)",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID модели",
+                        "name": "model_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/model_calculation/{model_id}/{calc_id}": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Корзина"
+                ],
+                "summary": "Обновление элемента в корзине",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID модели",
+                        "name": "model_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID расчёта",
+                        "name": "calc_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Новые параметры",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serializer.ModelCalcJSON"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Корзина"
+                ],
+                "summary": "Удаление элемента из корзины",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID модели",
+                        "name": "model_id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID расчёта",
+                        "name": "calc_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно удалено"
+                    }
+                }
+            }
+        },
+        "/api/models": {
+            "get": {
+                "description": "Возвращает список всех моделей реакторов из каталога",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Услуги"
+                ],
+                "summary": "Получение всех услуг",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Поиск по названию",
+                        "name": "search",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ds.Model"
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Доступно только Технику",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Услуги"
+                ],
+                "summary": "Добавление новой услуги",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Название",
+                        "name": "name",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Описание",
+                        "name": "description",
+                        "in": "formData",
+                        "required": true
+                    },
+                    {
+                        "type": "number",
+                        "description": "Мощность",
+                        "name": "power",
+                        "in": "formData"
+                    },
+                    {
+                        "type": "number",
+                        "description": "Расход Топлива",
+                        "name": "fuel_usage",
+                        "in": "formData"
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Model"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/models/{id}": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Услуги"
+                ],
+                "summary": "Получение услуги по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Модели",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Model"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/nuclear_calculations": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Список всех сформированных заявок (с фильтрами)",
+                "parameters": [
+                    {
+                        "enum": [
+                            "draft",
+                            "pending",
+                            "approved",
+                            "rejected"
+                        ],
+                        "type": "string",
+                        "description": "Фильтр по статусу",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "example": "\"2024-01-01\"",
+                        "description": "Дата от (формат: YYYY-MM-DD)",
+                        "name": "from-date",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "format": "date",
+                        "example": "\"2024-12-31\"",
+                        "description": "Дата до (формат: YYYY-MM-DD)",
+                        "name": "to-date",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Список расчётов",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/nuclear_calculations/items": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Получение иконки корзины (сводка черновика)",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/api/nuclear_calculations/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Получение заявки по ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Заявки",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/ds.Nuclear_calculation"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Изменение заявки",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID заявки",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Обновляемые поля заявки",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serializer.CalcJSON"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Логическое удаление заявки",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Заявки",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Успешно"
+                    }
+                }
+            }
+        },
+        "/api/nuclear_calculations/{id}/finish": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Доступно только Технику",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Завершение или отклонение заявки",
+                "parameters": [
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "ID заявки",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Действие: завершить или отклонить",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serializer.StatusJSON"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/nuclear_calculations/{id}/form": {
+            "put": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Переводит заявку из draft в сформирован",
+                "tags": [
+                    "Заявки"
+                ],
+                "summary": "Сформировать заявку (запуск расчетов)",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "ID Заявки",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "ds.Engineers": {
+            "type": "object",
+            "properties": {
+                "engineerID": {
+                    "type": "integer"
+                },
+                "isTechnician": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "ds.Model": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "fuelUsage": {
+                    "type": "number"
+                },
+                "isDeleted": {
+                    "type": "boolean"
+                },
+                "modelID": {
+                    "type": "integer"
+                },
+                "photoURL": {
+                    "type": "string"
+                },
+                "power": {
+                    "type": "number"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "video": {
+                    "type": "string"
+                }
+            }
+        },
+        "ds.Nuclear_calculation": {
+            "type": "object",
+            "properties": {
+                "calcID": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "creator": {
+                    "$ref": "#/definitions/ds.Engineers"
+                },
+                "creatorID": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "finishDate": {
+                    "type": "string"
+                },
+                "formingDate": {
+                    "type": "string"
+                },
+                "moderator": {
+                    "$ref": "#/definitions/ds.Engineers"
+                },
+                "moderatorID": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "serializer.CalcJSON": {
+            "type": "object",
+            "properties": {
+                "calc_id": {
+                    "type": "integer"
+                },
+                "completed_item_count": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "creator_login": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "finish_date": {
+                    "type": "string"
+                },
+                "forming_date": {
+                    "type": "string"
+                },
+                "moderator_login": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "serializer.EngineerJSON": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "is_technician": {
+                    "type": "boolean"
+                },
+                "login": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "serializer.ModelCalcJSON": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "integer"
+                },
+                "calc_id": {
+                    "type": "integer"
+                },
+                "model_id": {
+                    "type": "integer"
+                },
+                "res_fuel": {
+                    "type": "number"
+                },
+                "res_power": {
+                    "type": "number"
+                }
+            }
+        },
+        "serializer.StatusJSON": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
+    }
+}

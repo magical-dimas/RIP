@@ -1,8 +1,8 @@
-CREATE TABLE IF NOT EXISTS users (
-    user_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS engineers (
+    engineer_id SERIAL PRIMARY KEY,
     login VARCHAR(50) UNIQUE NOT NULL,
     password VARCHAR(100) NOT NULL,
-    is_moderator BOOLEAN DEFAULT FALSE
+    is_technician BOOLEAN DEFAULT FALSE
     );
 
 CREATE TABLE IF NOT EXISTS models (
@@ -20,10 +20,10 @@ CREATE TABLE IF NOT EXISTS nuclear_calculations (
     calc_id SERIAL PRIMARY KEY,
     status VARCHAR(20) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    creator_id INTEGER NOT NULL REFERENCES users(user_id),
+    creator_id INTEGER NOT NULL REFERENCES engineers(engineer_id),
     forming_date TIMESTAMP,
     finish_date TIMESTAMP,
-    moderator_id INTEGER REFERENCES users(user_id),
+    moderator_id INTEGER REFERENCES engineers(engineer_id),
     description VARCHAR(2000)
     );
 
@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS modelcalcs (
     PRIMARY KEY (calc_id, model_id)
     );
 
-INSERT INTO users (login, password, is_moderator) VALUES
+INSERT INTO engineers (login, password, is_technician) VALUES
                                                       ('user1', 'pass1', false),
                                                       ('moderator', 'modpass', true)
     ON CONFLICT (login) DO NOTHING;

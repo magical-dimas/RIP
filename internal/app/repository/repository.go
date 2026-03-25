@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"context"
 	"errors"
 
+	"github.com/go-redis/redis/v8"
 	"github.com/minio/minio-go/v7"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -20,6 +22,7 @@ var (
 type Repository struct {
 	db     *gorm.DB
 	mc     *minio.Client
+	redis  *redis.Client
 	userID int
 }
 
@@ -33,27 +36,30 @@ func New(dsn string) (*Repository, error) {
 		return nil, err
 	}
 
+	redisClient := redis.NewClient(&redis.Options{
+		Addr:     "localhost:6379",
+		Password: "password",
+		DB:       0,
+	})
+
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+		return nil, err
+	}
 	return &Repository{
-		db:     db,
-		mc:     mc,
-		userID: creatorUserID,
+		db:    db,
+		mc:    mc,
+		redis: redisClient,
 	}, nil
 }
 
-const creatorUserID = 1
+func (r *Repository) GetRedis() *redis.Client {
+	return r.redis
+}
 
 func (r *Repository) GetCreatorID() int {
-	return creatorUserID
+	return 1
 }
 
 func (r *Repository) GetUserID() int {
 	return r.userID
-}
-
-func (r *Repository) SetUserID(id int) {
-	r.userID = id
-}
-
-func (r *Repository) SignOut() {
-	r.userID = 0
 }

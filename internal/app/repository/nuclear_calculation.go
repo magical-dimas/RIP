@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -84,14 +83,14 @@ func (r *Repository) GetCalcDraft(creatorID uint) (ds.Nuclear_calculation, bool,
 }
 
 func (r *Repository) GetModeratorAndCreatorLogin(calc ds.Nuclear_calculation) (string, string, error) {
-	var creator ds.Users
-	if err := r.db.Where("user_id = ?", calc.CreatorID).First(&creator).Error; err != nil {
+	var creator ds.Engineers
+	if err := r.db.Where("engineer_id = ?", calc.CreatorID).First(&creator).Error; err != nil {
 		return "", "", err
 	}
 	var moderatorLogin string
 	if calc.ModeratorID != nil && *calc.ModeratorID != 0 {
-		var moderator ds.Users
-		if err := r.db.Where("user_id = ?", *calc.ModeratorID).First(&moderator).Error; err != nil {
+		var moderator ds.Engineers
+		if err := r.db.Where("engineer_id = ?", *calc.ModeratorID).First(&moderator).Error; err != nil {
 			return "", "", err
 		}
 		moderatorLogin = moderator.Login
@@ -359,15 +358,15 @@ func (r *Repository) FormCalc(id int) (ds.Nuclear_calculation, error) {
 	calc.FormingDate = &formingDate
 	return calc, nil
 }
-func (r *Repository) FinishCalc(id int, status string) (ds.Nuclear_calculation, error) {
+func (r *Repository) FinishCalc(id int, status string, userId int) (ds.Nuclear_calculation, error) {
 	if status != "completed" && status != "rejected" {
 		return ds.Nuclear_calculation{}, errors.New("неверный статус: допустимы completed или rejected")
 	}
-	user, err := r.GetUserByID(r.GetUserID())
+	engineer, err := r.GetEngineerByID(userId)
 	if err != nil {
 		return ds.Nuclear_calculation{}, err
 	}
-	if !user.IsModerator {
+	if !engineer.IsTechnician {
 		return ds.Nuclear_calculation{}, fmt.Errorf("%w: вы не модератор", ErrNotAllowed)
 	}
 	calc, err := r.GetSingleCalc(id)
@@ -381,14 +380,14 @@ func (r *Repository) FinishCalc(id int, status string) (ds.Nuclear_calculation, 
 	err = r.db.Model(&calc).Updates(map[string]interface{}{
 		"status":       status,
 		"finish_date":  finishDate,
-		"moderator_id": user.UserID,
+		"moderator_id": engineer.EngineerID,
 	}).Error
 	if err != nil {
 		return ds.Nuclear_calculation{}, err
 	}
 	calc.Status = status
-	calc.FinishDate = sql.NullTime{Time: finishDate, Valid: true}
-	uid := user.UserID
+	calc.FinishDate = &finishDate
+	uid := engineer.EngineerID
 	calc.ModeratorID = &uid
 	return calc, nil
 }

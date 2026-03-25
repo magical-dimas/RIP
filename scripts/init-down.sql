@@ -1,4 +1,4 @@
 DROP TABLE IF EXISTS modelcalcs;
 DROP TABLE IF EXISTS nuclear_calculations;
 DROP TABLE IF EXISTS models;
-DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS engineers;

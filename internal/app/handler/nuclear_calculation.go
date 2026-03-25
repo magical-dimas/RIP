@@ -13,8 +13,14 @@ import (
 	"rip_project/internal/app/serializer"
 )
 
+// @Summary Получение иконки корзины (сводка черновика)
+// @Tags Заявки
+// @Security BearerAuth
+// @Produce json
+// @Success 200 {object} map[string]interface{}
+// @Router /api/nuclear_calculations/items [get]
 func (h *Handler) GetCalcItems(ctx *gin.Context) {
-	creatorID := uint(h.Repository.GetCreatorID())
+	creatorID := uint(h.getEngineerID(ctx))
 	count := h.Repository.GetCalcModelCount(creatorID)
 	if count == 0 {
 		calc, err := h.Repository.CheckCurrentDraft(creatorID)
@@ -38,6 +44,15 @@ func (h *Handler) GetCalcItems(ctx *gin.Context) {
 	})
 }
 
+// @Summary Список всех сформированных заявок (с фильтрами)
+// @Tags Заявки
+// @Security BearerAuth
+// @Produce json
+// @Param status query string false "Фильтр по статусу" Enums(draft, pending, approved, rejected)
+// @Param from-date query string false "Дата от (формат: YYYY-MM-DD)" format(date) example("2024-01-01")
+// @Param to-date query string false "Дата до (формат: YYYY-MM-DD)" format(date) example("2024-12-31")
+// @Success 200 {array} map[string]interface{} "Список расчётов"
+// @Router /api/nuclear_calculations [get]
 func (h *Handler) GetAllCalcs(ctx *gin.Context) {
 	fromDate := ctx.Query("from-date")
 	var from, to time.Time
@@ -73,6 +88,12 @@ func (h *Handler) GetAllCalcs(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// @Summary Получение заявки по ID
+// @Tags Заявки
+// @Security BearerAuth
+// @Param id path int true "ID Заявки"
+// @Success 200 {object} ds.Nuclear_calculation
+// @Router /api/nuclear_calculations/{id} [get]
 func (h *Handler) GetCalcAPI(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -110,6 +131,15 @@ func (h *Handler) GetCalcAPI(ctx *gin.Context) {
 	})
 }
 
+// @Summary Изменение заявки
+// @Tags Заявки
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path integer true "ID заявки" minimum(1)
+// @Param input body serializer.CalcJSON true "Обновляемые поля заявки"
+// @Success 200 "Успешно"
+// @Router /api/nuclear_calculations/{id} [put]
 func (h *Handler) EditCalc(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -138,6 +168,13 @@ func (h *Handler) EditCalc(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
 }
 
+// @Summary Сформировать заявку (запуск расчетов)
+// @Description Переводит заявку из draft в сформирован
+// @Tags Заявки
+// @Security BearerAuth
+// @Param id path int true "ID Заявки"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/nuclear_calculations/{id}/form [put]
 func (h *Handler) FormCalc(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -161,6 +198,16 @@ func (h *Handler) FormCalc(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
 }
 
+// @Summary Завершение или отклонение заявки
+// @Description Доступно только Технику
+// @Tags Заявки
+// @Security BearerAuth
+// @Accept json
+// @Produce json
+// @Param id path integer true "ID заявки" minimum(1)
+// @Param input body serializer.StatusJSON true "Действие: завершить или отклонить"
+// @Success 200 {object} map[string]string
+// @Router /api/nuclear_calculations/{id}/finish [put]
 func (h *Handler) FinishCalc(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -173,7 +220,7 @@ func (h *Handler) FinishCalc(ctx *gin.Context) {
 		h.errorHandler(ctx, http.StatusBadRequest, err)
 		return
 	}
-	calc, err := h.Repository.FinishCalc(id, statusJSON.Status)
+	calc, err := h.Repository.FinishCalc(id, statusJSON.Status, int(h.getEngineerID(ctx)))
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			h.errorHandler(ctx, http.StatusNotFound, err)
@@ -189,6 +236,12 @@ func (h *Handler) FinishCalc(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
 }
 
+// @Summary Логическое удаление заявки
+// @Tags Заявки
+// @Security BearerAuth
+// @Param id path integer true "ID Заявки"
+// @Success 200 "Успешно"
+// @Router /api/nuclear_calculations/{id} [delete]
 func (h *Handler) DeleteCalcAPI(ctx *gin.Context) {
 	idStr := ctx.Param("id")
 	id, err := strconv.Atoi(idStr)
@@ -220,7 +273,7 @@ func (h *Handler) GetCalc(ctx *gin.Context) {
 		return
 	}
 
-	creatorID := uint(1)
+	creatorID := uint(h.getEngineerID(ctx))
 	isDraft, err := h.Repository.IsDraftCalc(id, creatorID)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
@@ -271,7 +324,7 @@ func (h *Handler) AddToCalc(ctx *gin.Context) {
 		return
 	}
 
-	creatorID := uint(1)
+	creatorID := uint(h.getEngineerID(ctx))
 
 	err = h.Repository.AddModel(uint(modelID), creatorID)
 	if err != nil {

@@ -10,6 +10,15 @@ import (
 	"rip_project/internal/pkg"
 )
 
+// @title RIP Project Nuclear Calc API
+// @version 1.0
+// @description API сервера для расчета ядерных реакторов
+// @host localhost:8080
+// @BasePath /
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+
 func main() {
 	router := gin.Default()
 
