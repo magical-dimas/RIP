@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
+	_ "rip_project/docs"
 	"rip_project/internal/app/config"
 	"rip_project/internal/app/dsn"
 	"rip_project/internal/app/handler"
@@ -36,6 +37,8 @@ func main() {
 	}
 
 	hand := handler.NewHandler(rep, conf)
+
+	//router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	application := pkg.NewApp(conf, router, hand)
 	application.RunApp()
