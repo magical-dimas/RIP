@@ -121,9 +121,9 @@ func (h *Handler) GetCalcAPI(ctx *gin.Context) {
 
 	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
 	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
-	itemsResp := make([]serializer.ModelCalcDetailJSON, 0, len(items))
+	itemsResp := make([]serializer.ModelCalcJSON, 0, len(items))
 	for _, item := range items {
-		itemsResp = append(itemsResp, serializer.ModelCalcDetailToJSON(item))
+		itemsResp = append(itemsResp, serializer.ModelCalcToJSON(item))
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"calc":   serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount),
@@ -207,9 +207,16 @@ func (h *Handler) FormCalc(ctx *gin.Context) {
 		}
 		return
 	}
-	creatorLogin, moderatorLogin, _ := h.Repository.GetModeratorAndCreatorLogin(calc)
 	completedCount, _ := h.Repository.GetCompletedItemCount(calc.CalcID)
-	ctx.JSON(http.StatusOK, serializer.CalcToJSON(calc, creatorLogin, moderatorLogin, completedCount))
+	items, err := h.Repository.GetCalcItems(int(calc.CalcID))
+	itemsResp := make([]serializer.ModelCalcJSON, 0, len(items))
+	for _, item := range items {
+		itemsResp = append(itemsResp, serializer.ModelCalcToJSON(item))
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"calculated": completedCount,
+		"items": itemsResp,
+	})
 }
 
 // @Summary Завершение или отклонение заявки
