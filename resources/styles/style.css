@@ -80,7 +80,7 @@ header {
     border: 1px solid white;
     font-size: 1rem;
     background: var(--card-bg);
-    border-radius: 3px;
+    border-radius: 0px;
     transition: all 0.3s;
     box-shadow: 0 0 0 1px white;
 }
@@ -452,14 +452,14 @@ header {
 }
 
 .request-icon__badge {
-    position: absolute;
-    top: -6px;
-    right: -6px;
-    min-width: 20px;
-    height: 20px;
-    border-radius: 10px;
-    background: var(--accent-red);
-    color: #FFFFFF;
+    position:relative;
+    top: -8px;
+    right: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 8px;
+    background: #fcfcfc;
+    color: var(--primary-brown);
     font-size: 11px;
     font-weight: 700;
     display: flex;
@@ -477,5 +477,20 @@ header {
 }
 
 .request-icon__badge--empty {
-    background: rgb(142, 118, 93);
+    position:relative;
+    top: -8px;
+    right: 2px;
+    width: 15px;
+    height: 15px;
+    border-radius: 8px;
+    background: #fcfcfc;
+    font-size: 11px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: rgb(172, 111, 54);
 }

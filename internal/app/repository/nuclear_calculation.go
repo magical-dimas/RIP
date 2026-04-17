@@ -101,6 +101,17 @@ func (r *Repository) GetModeratorAndCreatorLogin(calc ds.Nuclear_calculation) (s
 
 func (r *Repository) GetCompletedItemCount(calcID uint) (int, error) {
 	var count int64
+	var calc ds.Nuclear_calculation
+	res := r.db.Where("calc_id = ?", calcID).Limit(1).Find(&calc)
+	if res.Error != nil {
+		return 0, res.Error
+	}
+	if res.RowsAffected == 0 {
+		return 0, ErrNotFound
+	}
+	if (calc.Status != "completed" && calc.Status != "formed"){
+		return 0, nil
+	}
 	err := r.db.Model(&ds.ModelCalc{}).
 		Where("calc_id = ? AND res_power IS NOT NULL AND res_fuel IS NOT NULL", calcID).
 		Count(&count).Error

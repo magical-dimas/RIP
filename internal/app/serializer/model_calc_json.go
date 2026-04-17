@@ -29,17 +29,6 @@ func ModelCalcToJSON(item ds.ModelCalc) ModelCalcJSON {
 	}
 }
 
-func ModelCalcDetailToJSON(item ds.ModelCalc) ModelCalcDetailJSON {
-	return ModelCalcDetailJSON{
-		CalcID:   item.CalcID,
-		ModelID:  item.ModelID,
-		Amount:   item.Amount,
-		ResFuel:  item.ResFuel,
-		ResPower: item.ResPower,
-		Model:    ModelToJSON(item.Model),
-	}
-}
-
 func ModelCalcFromJSON(j ModelCalcJSON) ds.ModelCalc {
 	return ds.ModelCalc{
 		Amount: j.Amount,
