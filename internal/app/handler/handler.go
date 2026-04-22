@@ -48,6 +48,12 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 		engineers.POST("/login", h.SignIn)
 	}
 
+	optionalAuth := api.Group("/")
+	optionalAuth.Use(h.OptionalAuthCheck(role.Engineer))
+	{
+		optionalAuth.GET("/nuclear_calculations/items", h.GetCalcItems)
+	}
+
 	//authorized
 	authGroup := api.Group("/")
 	authGroup.Use(h.WithAuthCheck(role.Engineer))
@@ -58,7 +64,6 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 		authGroup.PUT("/model_calculation/:model_id", h.EditInCalc)
 		authGroup.DELETE("/model_calculation/:model_id", h.DeleteFromCalc)
 
-		authGroup.GET("/nuclear_calculations/items", h.GetCalcItems)
 		authGroup.GET("/nuclear_calculations", h.GetAllCalcs)
 		authGroup.GET("/nuclear_calculations/:id", h.GetCalcAPI)
 		authGroup.PUT("/nuclear_calculations/:id", h.EditCalc)

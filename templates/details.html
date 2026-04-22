@@ -27,7 +27,7 @@
         <!-- Видео на весь фон -->
         <div class="detail-card__video-wrap">
             <video class="detail-card__video" controls autoplay muted loop playsinline>
-                <source src="http://localhost:9000/reactorservice/{{ .model.Video }}" type="video/mp4">
+                <source src="{{ .model.Video }}" type="video/mp4">
             </video>
             <!-- Опционально: затемняющий оверлей для читаемости текста -->
             <div class="detail-card__overlay"></div>
