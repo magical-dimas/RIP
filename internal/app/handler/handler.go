@@ -43,7 +43,7 @@ func (h *Handler) GetModels(ctx *gin.Context) {
 	//	logrus.Error(err)
 	//}
 
-	request, err := h.Repository.GetRequest(1)
+	calc, err := h.Repository.GetCalc(1)
 	if err != nil {
 		logrus.Error(err)
 	}
@@ -51,7 +51,7 @@ func (h *Handler) GetModels(ctx *gin.Context) {
 	ctx.HTML(http.StatusOK, "index.html", gin.H{
 		"models": models,
 		"query":  searchQuery,
-		"count":  len(request.Models),
+		"count":  len(calc.Models),
 	})
 }
 
@@ -68,7 +68,7 @@ func (h *Handler) GetModel(ctx *gin.Context) {
 		logrus.Error(err)
 	}
 
-	reqMod, err := h.Repository.GetRequestForModel(id)
+	reqMod, err := h.Repository.GetCalcForModel(id)
 
 	ctx.HTML(http.StatusOK, "details.html", gin.H{
 		"model":  model,
@@ -76,13 +76,13 @@ func (h *Handler) GetModel(ctx *gin.Context) {
 	})
 }
 
-func (h *Handler) GetRequest(ctx *gin.Context) {
-	request, err := h.Repository.GetRequest(1)
+func (h *Handler) GetCalc(ctx *gin.Context) {
+	calc, err := h.Repository.GetCalc(1)
 	if err != nil {
 		logrus.Error(err)
 	}
 
 	ctx.HTML(http.StatusOK, "cart.html", gin.H{
-		"request": request,
+		"nuclear_calculation": calc,
 	})
 }

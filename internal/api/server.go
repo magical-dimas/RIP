@@ -26,7 +26,7 @@ func StartServer() {
 
 	r.GET("/", h.GetModels)
 	r.GET("/model/:id", h.GetModel)
-	r.GET("/cart", h.GetRequest)
+	r.GET("/cart", h.GetCalc)
 
 	r.Run()
 	log.Println("Server down")

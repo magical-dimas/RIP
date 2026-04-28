@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ .request.Name }}</title>
+    <title>{{ .nuclear_calculation.Name }}</title>
     <link rel="stylesheet" href="/static/styles/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -25,8 +25,8 @@
 <main class="container">
     <div class="request-detail">
         <div class="request-detail__header-card">
-            <h1 class="request-detail__title">{{ .request.Name }}</h1>
-            <p class="request-detail__description">{{ .request.Description }}</p>
+            <h1 class="request-detail__title">{{ .nuclear_calculation.Name }}</h1>
+            <p class="request-detail__description">{{ .nuclear_calculation.Description }}</p>
         </div>
         <table class="request-table">
             <thead>
@@ -41,7 +41,7 @@
             </tr>
             </thead>
             <tbody>
-            {{ range .request.Models }}
+            {{ range .nuclear_calculation.Models }}
             <tr>
                 <td class="request-table__col-photo">
                     <img src="{{ .Model.ImageURL }}" alt="{{ .Model.Name }}">
