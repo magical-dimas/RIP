@@ -6,6 +6,7 @@ type ModelJSON struct {
 	ModelID     uint    `json:"model_id"`
 	Title       string  `json:"title"`
 	Description string  `json:"description"`
+	ShortDesc   string  `json:"short_desc"`
 	IsDeleted   bool    `json:"is_deleted"`
 	PhotoURL    string  `json:"photo_url"`
 	Video       string  `json:"video"`
@@ -18,6 +19,7 @@ func ModelToJSON(m ds.Model) ModelJSON {
 		ModelID:     m.ModelID,
 		Title:       m.Title,
 		Description: m.Description,
+		ShortDesc:   m.ShortDesc,
 		IsDeleted:   m.IsDeleted,
 		PhotoURL:    m.PhotoURL,
 		Video:       m.Video,

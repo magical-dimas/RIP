@@ -76,7 +76,8 @@ func (h *Handler) GetModelAPI(ctx *gin.Context) {
 // @Accept multipart/form-data
 // @Produce json
 // @Param name formData string true "Название"
-// @Param description formData string true "Описание"
+// @Param description formData string false "Описание"
+// @Param short_desc formData string false "Краткое описание"
 // @Param power formData number false "Мощность"
 // @Param fuel_usage formData number false "Расход Топлива"
 // @Success 201 {object} ds.Model
@@ -92,8 +93,9 @@ func (h *Handler) CreateModel(ctx *gin.Context) {
 	} else {
 		title := ctx.PostForm("title")
 		desc := ctx.PostForm("description")
-		if title == "" || desc == "" {
-			h.errorHandler(ctx, http.StatusBadRequest, fmt.Errorf("title and description are required"))
+		s_desc := ctx.PostForm("short_desc")
+		if title == "" {
+			h.errorHandler(ctx, http.StatusBadRequest, fmt.Errorf("title is required"))
 			return
 		}
 		power := float64(55)
@@ -107,6 +109,7 @@ func (h *Handler) CreateModel(ctx *gin.Context) {
 		j = serializer.ModelJSON{
 			Title:       title,
 			Description: desc,
+			ShortDesc:   s_desc,
 			Power:       power,
 			FuelUsage:   fuel_usage,
 		}

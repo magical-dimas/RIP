@@ -270,8 +270,13 @@ const docTemplate = `{
                         "type": "string",
                         "description": "Описание",
                         "name": "description",
-                        "in": "formData",
-                        "required": true
+                        "in": "formData"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Краткое описание",
+                        "name": "short_desc",
+                        "in": "formData"
                     },
                     {
                         "type": "number",
@@ -624,6 +629,9 @@ const docTemplate = `{
                 },
                 "power": {
                     "type": "number"
+                },
+                "shortDesc": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"

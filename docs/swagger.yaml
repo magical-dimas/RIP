@@ -25,6 +25,8 @@ definitions:
         type: string
       power:
         type: number
+      shortDesc:
+        type: string
       title:
         type: string
       video:
@@ -266,7 +268,10 @@ paths:
       - description: Описание
         in: formData
         name: description
-        required: true
+        type: string
+      - description: Краткое описание
+        in: formData
+        name: short_desc
         type: string
       - description: Мощность
         in: formData
