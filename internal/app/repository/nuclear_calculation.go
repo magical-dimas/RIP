@@ -117,9 +117,12 @@ func (r *Repository) GetCompletedItemCount(calcID uint) (int, error) {
 	return int(count), err
 }
 
-func (r *Repository) GetAllCalcs(from, to time.Time, status string) ([]ds.Nuclear_calculation, error) {
+func (r *Repository) GetAllCalcs(from, to time.Time, status string, uid uint, is_mod bool) ([]ds.Nuclear_calculation, error) {
 	var calcs []ds.Nuclear_calculation
-	sub := r.db.Where("status != ? AND status != ?", "deleted", "draft")
+    sub := r.db.Where("status != ? AND status != ?", "deleted", "draft")
+	if !is_mod {
+        sub = sub.Where("creator_id = ?", uid)
+    }
 	if !from.IsZero() {
 		sub = sub.Where("forming_date >= ?", from)
 	}

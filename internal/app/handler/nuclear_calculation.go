@@ -10,6 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"rip_project/internal/app/repository"
+    "rip_project/internal/app/role"
 	"rip_project/internal/app/serializer"
 )
 
@@ -54,7 +55,7 @@ func (h *Handler) GetCalcItems(ctx *gin.Context) {
 // @Success 200 {array} map[string]interface{} "Список расчётов"
 // @Router /api/nuclear_calculations [get]
 func (h *Handler) GetAllCalcs(ctx *gin.Context) {
-	fromDate := ctx.Query("from-date")
+	fromDate := ctx.Query("from_date")
 	var from, to time.Time
 	if fromDate != "" {
 		t, err := time.Parse("2006-01-02", fromDate)
@@ -64,7 +65,7 @@ func (h *Handler) GetAllCalcs(ctx *gin.Context) {
 		}
 		from = t
 	}
-	toDate := ctx.Query("to-date")
+	toDate := ctx.Query("to_date")
 	if toDate != "" {
 		t, err := time.Parse("2006-01-02", toDate)
 		if err != nil {
@@ -74,7 +75,8 @@ func (h *Handler) GetAllCalcs(ctx *gin.Context) {
 		to = t
 	}
 	status := ctx.Query("status")
-	calcs, err := h.Repository.GetAllCalcs(from, to, status)
+    r, _ := ctx.Get("role")
+	calcs, err := h.Repository.GetAllCalcs(from, to, status, h.getEngineerID(ctx), r.(role.Role)==role.Technician)
 	if err != nil {
 		h.errorHandler(ctx, http.StatusInternalServerError, err)
 		return

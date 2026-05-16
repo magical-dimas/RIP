@@ -8,6 +8,10 @@ type ModelCalcJSON struct {
 	Amount   int      `json:"amount"`
 	ResFuel  *float64 `json:"res_fuel"`
 	ResPower *float64 `json:"res_power"`
+    Fuel     float64  `json:"fuel"`
+    Power    float64  `json:"power"`
+    Photo    string   `json:"photo"`
+    Title string `json:"title"`
 }
 
 type ModelCalcDetailJSON struct {
@@ -26,6 +30,10 @@ func ModelCalcToJSON(item ds.ModelCalc) ModelCalcJSON {
 		Amount:   item.Amount,
 		ResFuel:  item.ResFuel,
 		ResPower: item.ResPower,
+        Fuel:     item.Model.FuelUsage,
+        Power:    item.Model.Power,
+        Photo:    item.Model.PhotoURL,
+        Title:    item.Model.Title,
 	}
 }
 
